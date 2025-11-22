@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Ad Landing Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .ad-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 20px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .ad-wrapper:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .ad-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .ad-wrapper:hover::before {
+            opacity: 1;
+        }
+
+        .ad-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .click-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .ad-wrapper:hover .click-indicator {
+            opacity: 1;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .ad-wrapper {
+                border-radius: 15px;
+            }
+
+            .click-indicator {
+                font-size: 12px;
+                padding: 10px 20px;
+                bottom: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            .ad-wrapper {
+                border-radius: 12px;
+            }
+
+            .click-indicator {
+                font-size: 11px;
+                padding: 8px 16px;
+                bottom: 10px;
+            }
+        }
+
+        /* Loading placeholder */
+        .ad-image.loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            min-height: 300px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ad-wrapper" id="adWrapper">
+            <img 
+                src="YOUR_AD_IMAGE_URL_HERE" 
+                alt="Advertisement" 
+                class="ad-image loading" 
+                id="adImage"
+            >
+            <div class="click-indicator">Click to Learn More →</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Replace these values
+        const AD_IMAGE_URL = 'https://samirahomestay.com/assets/img/globweb.png';
+        const REDIRECT_URL = 'https://globweb.globsoft.tech/order';
+
+        // Get elements
+        const adWrapper = document.getElementById('adWrapper');
+        const adImage = document.getElementById('adImage');
+
+        // Set image source
+        adImage.src = AD_IMAGE_URL;
+
+        // Remove loading class when image loads
+        adImage.addEventListener('load', function() {
+            adImage.classList.remove('loading');
+        });
+
+        // Handle image load error
+        adImage.addEventListener('error', function() {
+            adImage.classList.remove('loading');
+            console.error('Failed to load ad image');
+        });
+
+        // Click handler with analytics tracking capability
+        adWrapper.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Add a subtle click animation
+            adWrapper.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                adWrapper.style.transform = '';
+            }, 150);
+
+            // Optional: Track click event (you can integrate with Google Analytics, etc.)
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'ad_click', {
+                    'event_category': 'engagement',
+                    'event_label': 'qr_ad_landing'
+                });
+            }
+
+            // Redirect to your link
+            setTimeout(() => {
+                window.location.href = REDIRECT_URL;
+            }, 200);
+        });
+
+        // Keyboard accessibility
+        adWrapper.setAttribute('tabindex', '0');
+        adWrapper.setAttribute('role', 'link');
+        adWrapper.setAttribute('aria-label', 'Click to view advertisement');
+
+        adWrapper.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                adWrapper.click();
+            }
+        });
+
+        // Prevent context menu on image (optional - protects your ad image)
+        adImage.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    </script>
+</body>
+</html>
